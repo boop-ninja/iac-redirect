@@ -63,7 +63,36 @@ resource "kubernetes_deployment" "i" {
   }
 }
 
+resource "kubernetes_manifest" "i" {
+  depends_on = [kubernetes_namespace.name, kubernetes_deployment.i]
+  manifest = {
+    apiVersion = "traefik.containo.us/v1alpha1"
+    kind = "IngressRoute"
+    metadata = {
+      name = local.app
+      namespace = local.namespace
+    }
 
+    spec = {
+      entryPoints = ["web"]
+      routes = [
+        {
+          kind = "Rule"
+          match = "Host(`links.boop.ninja`)"
+          services = [
+            {
+              kind = "Service"
+              name = local.app
+              namespace = local.namespace
+              passHostHeader = true
+              port = "web"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
 
 
 
