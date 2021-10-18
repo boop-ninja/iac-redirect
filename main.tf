@@ -83,52 +83,40 @@ resource "kubernetes_service" "i" {
 
   }
 }
-
-resource "kubernetes_manifest" "i" {
+resource "kubernetes_ingress" "i" {
   depends_on = [
     kubernetes_namespace.name,
     kubernetes_deployment.i,
     kubernetes_secret.tls
   ]
-  manifest = {
-    apiVersion = "traefik.containo.us/v1alpha1"
-    kind       = "IngressRoute"
-    metadata = {
-      name      = local.app
-      namespace = local.namespace
+  metadata {
+    name      = local.app
+    namespace = local.namespace
+    annotations = {
+      "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
+      "traefik.ingress.kubernetes.io/router.tls"         = "true"
     }
-
-    spec = {
-      entryPoints = [
-        "metrics",
-        "web",
-        "websecure"
+  }
+  spec {
+    tls {
+      secret_name = kubernetes_secret.tls.metadata[0].name
+      hosts = [
+        local.domain_name
       ]
-      routes = [
-        {
-          kind  = "Rule"
-          match = "Host(`${local.domain_name}`)"
-          services = [
-            {
-              kind           = "Service"
-              name           = local.app
-              namespace      = local.namespace
-              passHostHeader = true
-              port           = 8000
-            }
-          ]
+    }
+    rule {
+      http {
+        path {
+          path = "/"
+          backend {
+            service_name = kubernetes_service.i.metadata[0].name
+            service_port = 8000
+          }
         }
-      ]
-      tls = {
-        secretName = kubernetes_secret.tls.metadata[0].name
-        domains = [{
-          main = local.domain_name
-        }]
       }
     }
   }
 }
-
 
 
 
