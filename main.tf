@@ -1,6 +1,6 @@
 locals {
-  app       = "redirect-server"
-  namespace = kubernetes_namespace.name.metadata[0].name
+  app         = "redirect-server"
+  namespace   = kubernetes_namespace.name.metadata[0].name
   domain_name = "links.boop.ninja"
 
 }
@@ -56,7 +56,7 @@ resource "kubernetes_deployment" "i" {
 
           port {
             container_port = 8000
-            name = "web"
+            name           = "web"
           }
         }
       }
@@ -66,7 +66,7 @@ resource "kubernetes_deployment" "i" {
 
 resource "kubernetes_service" "i" {
   metadata {
-    name = local.app
+    name      = local.app
     namespace = local.namespace
   }
 
@@ -76,8 +76,8 @@ resource "kubernetes_service" "i" {
     }
 
     port {
-      name = "web"
-      port = 8080
+      name        = "web"
+      port        = 8080
       target_port = "web"
     }
 
@@ -92,9 +92,9 @@ resource "kubernetes_manifest" "i" {
   ]
   manifest = {
     apiVersion = "traefik.containo.us/v1alpha1"
-    kind = "IngressRoute"
+    kind       = "IngressRoute"
     metadata = {
-      name = local.app
+      name      = local.app
       namespace = local.namespace
     }
 
@@ -102,15 +102,15 @@ resource "kubernetes_manifest" "i" {
       entryPoints = ["web"]
       routes = [
         {
-          kind = "Rule"
+          kind  = "Rule"
           match = "Host(`${local.domain_name}`)"
           services = [
             {
-              kind = "Service"
-              name = local.app
-              namespace = local.namespace
+              kind           = "Service"
+              name           = local.app
+              namespace      = local.namespace
               passHostHeader = true
-              port = "web"
+              port           = "web"
             }
           ]
         }
@@ -118,7 +118,7 @@ resource "kubernetes_manifest" "i" {
       tls = {
         secretName = kubernetes_secret.tls.metadata[0].name
         domains = [{
-          main: local.domain_name
+          main : local.domain_name
         }]
       }
     }
