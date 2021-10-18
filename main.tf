@@ -99,7 +99,11 @@ resource "kubernetes_manifest" "i" {
     }
 
     spec = {
-      entryPoints = ["websecure"]
+      entryPoints = [
+        "metrics",
+        "web",
+        "websecure"
+      ]
       routes = [
         {
           kind  = "Rule"
