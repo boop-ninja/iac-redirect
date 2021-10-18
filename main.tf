@@ -77,8 +77,8 @@ resource "kubernetes_service" "i" {
 
     port {
       name        = "web"
-      port        = 8080
-      target_port = "web"
+      port        = 8000
+      target_port = 8000
     }
 
   }
@@ -110,7 +110,7 @@ resource "kubernetes_manifest" "i" {
               name           = local.app
               namespace      = local.namespace
               passHostHeader = true
-              port           = "web"
+              port           = 8000
             }
           ]
         }
