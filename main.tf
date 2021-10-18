@@ -47,15 +47,25 @@ resource "kubernetes_deployment" "i" {
             name  = "DEFAULT_ENDPOINT"
             value = var.default_url
           }
+
           env {
             name  = "REDIRECTS"
             value = var.redirects
+          }
+
+          port {
+            container_port = 8000
+            name = "web"
           }
         }
       }
     }
   }
 }
+
+
+
+
 
 
 
