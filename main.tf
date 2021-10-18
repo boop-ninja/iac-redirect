@@ -1,7 +1,8 @@
 locals {
   app       = "redirect-server"
   namespace = kubernetes_namespace.name.metadata[0].name
-  port      = 8123
+  domain_name = "links.boop.ninja"
+
 }
 
 resource "kubernetes_namespace" "name" {
@@ -84,7 +85,11 @@ resource "kubernetes_service" "i" {
 }
 
 resource "kubernetes_manifest" "i" {
-  depends_on = [kubernetes_namespace.name, kubernetes_deployment.i]
+  depends_on = [
+    kubernetes_namespace.name,
+    kubernetes_deployment.i,
+    kubernetes_secret.tls
+  ]
   manifest = {
     apiVersion = "traefik.containo.us/v1alpha1"
     kind = "IngressRoute"
@@ -98,7 +103,7 @@ resource "kubernetes_manifest" "i" {
       routes = [
         {
           kind = "Rule"
-          match = "Host(`links.boop.ninja`)"
+          match = "Host(`${local.domain_name}`)"
           services = [
             {
               kind = "Service"
@@ -110,6 +115,12 @@ resource "kubernetes_manifest" "i" {
           ]
         }
       ]
+      tls = {
+        secretName = kubernetes_secret.tls.metadata[0].name
+        domains = [{
+          main: local.domain_name
+        }]
+      }
     }
   }
 }
