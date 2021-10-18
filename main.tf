@@ -105,6 +105,7 @@ resource "kubernetes_ingress" "i" {
       ]
     }
     rule {
+      host = local.domain_name
       http {
         path {
           path = "/"
