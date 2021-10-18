@@ -118,7 +118,7 @@ resource "kubernetes_manifest" "i" {
       tls = {
         secretName = kubernetes_secret.tls.metadata[0].name
         domains = [{
-          main : local.domain_name
+          main = local.domain_name
         }]
       }
     }
