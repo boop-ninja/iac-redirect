@@ -92,10 +92,6 @@ resource "kubernetes_ingress" "i" {
   metadata {
     name      = local.app
     namespace = local.namespace
-    annotations = {
-      "traefik.ingress.kubernetes.io/router.entrypoints" = "websecure"
-      "traefik.ingress.kubernetes.io/router.tls"         = "true"
-    }
   }
   spec {
     tls {
