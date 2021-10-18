@@ -63,6 +63,26 @@ resource "kubernetes_deployment" "i" {
   }
 }
 
+resource "kubernetes_service" "i" {
+  metadata {
+    name = local.app
+    namespace = local.namespace
+  }
+
+  spec {
+    selector = {
+      app = local.app
+    }
+
+    port {
+      name = "web"
+      port = 8080
+      target_port = "web"
+    }
+
+  }
+}
+
 resource "kubernetes_manifest" "i" {
   depends_on = [kubernetes_namespace.name, kubernetes_deployment.i]
   manifest = {
