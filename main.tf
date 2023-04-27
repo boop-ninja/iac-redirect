@@ -92,7 +92,7 @@ resource "kubernetes_ingress_v1" "i" {
     name      = local.app
     namespace = local.namespace
     annotations = {
-     "cert-manager.io/cluster-issuer": "letsencrypt-prod"
+      "cert-manager.io/cluster-issuer" : "letsencrypt-prod"
     }
   }
   spec {
@@ -112,7 +112,7 @@ resource "kubernetes_ingress_v1" "i" {
             service {
               name = kubernetes_service.i.metadata[0].name
               port {
-                number = 8080
+                number = 8000
               }
             }
           }
