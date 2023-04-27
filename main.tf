@@ -83,7 +83,7 @@ resource "kubernetes_service" "i" {
 
   }
 }
-resource "kubernetes_ingress" "i" {
+resource "kubernetes_ingress_v1" "i" {
   depends_on = [
     kubernetes_namespace.name,
     kubernetes_deployment.i
@@ -107,9 +107,14 @@ resource "kubernetes_ingress" "i" {
       http {
         path {
           path = "/"
+
           backend {
-            service_name = kubernetes_service.i.metadata[0].name
-            service_port = 8000
+            service {
+              name = kubernetes_service.i.metadata[0].name
+              port {
+                number = 8080
+              }
+            }
           }
         }
       }
