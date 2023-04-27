@@ -13,8 +13,6 @@ provider "kubernetes" {
   client_key         = base64decode(var.kube_key)
   insecure           = true
 
-  config_context = "default"
-
   experiments {
     manifest_resource = true
   }
