@@ -86,16 +86,18 @@ resource "kubernetes_service" "i" {
 resource "kubernetes_ingress" "i" {
   depends_on = [
     kubernetes_namespace.name,
-    kubernetes_deployment.i,
-    kubernetes_secret.tls
+    kubernetes_deployment.i
   ]
   metadata {
     name      = local.app
     namespace = local.namespace
+    annotations = {
+     "cert-manager.io/cluster-issuer": "letsencrypt-prod"
+    }
   }
   spec {
     tls {
-      secret_name = kubernetes_secret.tls.metadata[0].name
+      secret_name = "${local.app}-cert"
       hosts = [
         local.domain_name
       ]
